@@ -18,7 +18,7 @@ class APIScraper:
             return "abcdefghijklmnopqrstuvwxyz"
         elif self.version == 2: 
             return "abcdefghijklmnopqrstuvwxyz0123456789"
-        else : return "abcdefghijklmnopqrstuvwxyz0123456789_+- "
+        else : return "abcdefghijklmnopqrstuvwxyz0123456789_+-. "
 
 
     def _get_limit(self):
