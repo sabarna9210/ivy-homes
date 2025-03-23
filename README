@@ -1,0 +1,167 @@
+Thank you for providing me the opportunity to work on this problem and showcase my skills. I have implemented the solution in Python .
+
+First, I should start by exploring the known endpoint. Let me try some sample queries. For example, if I send a GET request to /v1/autocomplete?query=a.But how does the autocomplete work? Maybe each character added narrows down the results. For instance, query=ab would return names starting with 'ab'. So the approach would be to perform a breadth-first search (BFS) on all possible prefixes. Starting with each letter a-z, then for each of those, appending another letter, and so on, until there are no more results.
+
+The possible problems and constraints that could be present in this program can be:
+1.Valid characters that be used.
+2.Rate Limiting
+3.Pagination
+4.Query Length
+5.Response Format
+
+
+I will start by creating a APIscrapper class that will handle the API requests and responses. I will then create a function that will take the query as input and return the results. I will then test the function with some sample queries to see if it is working as expected. I will also handle the possible errors that could occur during the process.I will also create a function that will handle the pagination and rate limiting. I will then test the function with some sample queries to see if it is working as expected. I will also handle the possible errors that could occur during the process.
+
+Problem 1: No. of Versions
+Manually I tested there are 3 versions V1 V2 and V3. I will create a function that will handle the versioning and will test the function with some sample queries to see if it is working as expected. I will also handle the possible errors that could occur during the process.
+
+
+IMPORTANT POINT:API is designed such that when a query returns exactly one name, that name is a full name. So, if I query 'alice', and the API returns ["alice"], then that's a full name. But if I query 'ali' and get ["alice"], then 'alice' is a longer name. So in this case, the API might return all names that start with the query, regardless of their length.
+
+Problem 2: Rate Limiting
+To determine the maximum request rate the API allows without triggering 429 (Too Many Requests) errors, conduct tests by sending bursts of requests with varying delays between them. Begin with a high delay and gradually decrease it in each test run. Within each burst, send multiple requests rapidly and monitor responses for any 429 errors. If a 429 error occurs, record that delay as too aggressive. After each burst, wait 5 seconds before the next test to prevent interference from previous runs.
+
+ <<The code is Given the the rateLimit.py file>>
+# Updated Rate Limit Discovery Algorithm
+1. Initialize Parameters:
+    - Set `initial_delay = 2.0` seconds.
+    - Set `delay_decrement = 0.05` seconds (coarse search).
+    - Set `delay_increment = 0.01` seconds (fine-tuning).
+    - Set `min_delay = 0.05` seconds.
+    - Set `batch_size = 10` requests.
+    - Set `cooldown = 5` seconds.
+    - Set `current_delay = initial_delay`.
+    - Set `safe_delay = None`.
+
+2. Coarse Search (Finding the Rate Limit):
+    while `current_delay >= min_delay`:
+        - Send `batch_size` requests with `current_delay` between them.
+        - Monitor response codes.
+        - if any request receives a `429` response:
+            - Print "Rate limit hit at delay Xs".
+            - Break the loop and proceed to fine-tuning.
+        - else:
+            - Store `current_delay` as `safe_delay`.
+        - Reduce `current_delay` by `delay_decrement`.
+        - Wait for `cooldown` seconds to allow rate limits to reset.
+
+3. Fine-Tuning (Finding the Exact Safe Limit):
+    - Set `exact_delay = safe_delay`.
+    while `True`:
+        - Increase `exact_delay` by `delay_increment`.
+        - Send `batch_size` requests with `exact_delay` between them.
+        - if any request receives a `429` response:
+            - Print "Increasing delay to Xs due to rate limit".
+            - Continue increasing `exact_delay`.
+        - else:
+            - Print "Found exact safe delay: Xs".
+            - Break the loop.
+
+4. Output Results:
+    - Report `exact_delay` as the highest sustainable request rate before hitting `429`.
+    - Calculate and report the **maximum sustainable requests per second (RPS)**.
+
+
+But if we want to escape rate limiting without finding it we can use a backoff time to avoid it . Like if response 429 IS received , we can increase the delay time by twice and thats how rate limiting can be avoided.
+    for each request:
+        retries = 0
+        while retries < max_retries:
+            send request
+            if status is 429:
+                retries += 1
+                time.sleep(retry_delay * 2)
+            else:
+                break
+
+
+
+Problem 4: Pagination
+    I had to find out whether the API supports pagination. If the API returns a fixed number of results per page, then I need to implement pagination to retrieve all results. I will create a function that will handle the pagination and will test the function with some sample queries to see if it is working as expected. I will also handle the possible errors that could occur during the process.
+
+    def test_pagination(base_url):
+        response = requests.get(base_url, params={'query': 'a', 'page': 2})
+        data = response.json()
+        
+        if isinstance(data, dict) and 'page' in data:
+            print("Pagination detected. Update code to handle pages.")
+        else:
+            print("No pagination detected.")
+    #If pagination exists, modify the code to loop through pages:
+        page = 1
+        while True:
+            response = requests.get(base_url, params={'query': prefix, 'page': page})
+            data = response.json()
+            if not data['results']:
+                break
+            # Process results...
+            page += 1
+
+
+   ## Although no Pagination is detected.
+
+Problem 5: Query Length
+    I had to find out the maximum query length the API supports. If the API has a limit on the query length, then I need to handle it in the code.To check the query length used a binay search approach .
+
+    # to implement in the main code i need to put a check 
+    MAX_QUERY_LENGTH, STRICT_LIMIT = find_max_query_length(base_url)
+
+    # In your processing loop
+    while queue:
+        prefix = queue.popleft()
+        
+        if STRICT_LIMIT and len(prefix) > MAX_QUERY_LENGTH:
+            continue
+            
+        # For truncating APIs
+        if not STRICT_LIMIT:
+            prefix = prefix[:MAX_QUERY_LENGTH]
+        
+        # Rest of processing...
+
+
+
+
+Now to use the API atfirst I thought I have to use BFS to get to the exact extracted names but I realised that I could not retrieve all names like that because of the size limit. So brute is the the one approach i had to use . 
+Algorithm for the brute force approach:--->
+# Brute Force API Scraping Algorithm
+
+1. **Initialize Parameters:**
+    - Set `version` of the API.
+    - Define `base_url` for API requests.
+    - Determine `alphabet` based on `version`:
+        - Version 1: `"abcdefghijklmnopqrstuvwxyz"`
+        - Version 2: `"abcdefghijklmnopqrstuvwxyz0123456789"`
+        - Version 3+: `"abcdefghijklmnopqrstuvwxyz0123456789_+- "`
+    - Initialize `results` as an empty set to store unique results.
+    - Initialize `request_count = 0` to track API requests.
+    - Set initial `delay = 60` seconds to handle rate limits.
+    - Set API request `limit` based on version constraints.
+
+2. **Define a function `_fetch_query(query)`:**
+    - Construct API request URL using the given `query`.
+    - Send a GET request to the API.
+    - If the response is successful (`200 OK`):
+        - Extract `results` and add them to the set.
+        - Increment `request_count`.
+    - If response status is `429 Too Many Requests`:
+        - Print a rate limit warning.
+        - Wait for `delay` seconds before retrying.
+        - Return `False` to indicate failure.
+    - If any other error occurs, log the error and return `False`.
+
+3. **Run Brute Force Query Execution (`run()`):**
+    - If `version != 1`, process **single-character queries** first:
+        - Loop through each character in `alphabet`.
+        - Call `_fetch_query(char)`.
+    - Process **two-letter queries**:
+        - Generate all possible 2-character combinations from `alphabet`.
+        - For each combination:
+            - Call `_fetch_query(query)`.
+            - If `request_count` reaches the API `limit`:
+                - Wait for `delay` seconds before continuing.
+            - If `_fetch_query(query)` fails:
+                - Double the `delay` time to handle potential rate limits.
+
+4. **Output Final Results:**
+    - Print the total number of unique results collected.
+    - Save the sorted results to a file (`results.txt`).
