@@ -16,16 +16,20 @@ def find_rate_limit(base_url):
     while current_delay >= min_delay:
         rate_limited = False
         req_times = []
+        
         for _ in range(batch_size):
             start = time.monotonic()
             response = requests.get(base_url, params={'query': 'a'})
             req_times.append(time.monotonic() - start)
+            
             if response.status_code == 429:
                 rate_limited = True
                 break
+            
             time.sleep(current_delay)
-        avg_req_time = sum(req_times) / len(req_times) if req_times else 0
-        achieved_rps = 1 / (avg_req_time + current_delay) if (avg_req_time + current_delay) > 0 else 0
+        
+        total_time = sum(req_times) + (current_delay * batch_size)
+        achieved_rps = 1 / total_time if total_time > 0 else 0  # Handle division by zero safely
 
         if not rate_limited:
             safe_config = {'delay': current_delay, 'rps': achieved_rps}
@@ -43,18 +47,26 @@ def find_rate_limit(base_url):
 
     # Phase 2: Fine-tune by increasing the delay until 429 is avoided.
     exact_delay = safe_config['delay']
+    
     while True:
         test_delay = round(exact_delay + delay_increment, 2)
         rate_limited = False
         req_times = []
+        
         for _ in range(batch_size):
             start = time.monotonic()
             response = requests.get(base_url, params={'query': 'a'})
             req_times.append(time.monotonic() - start)
+            
             if response.status_code == 429:
                 rate_limited = True
                 break
+            
             time.sleep(test_delay)
+
+        total_time = sum(req_times) + (test_delay * batch_size)
+        achieved_rps = 1 / total_time if total_time > 0 else 0  # Handle division by zero safely
+
         if not rate_limited:
             exact_delay = test_delay
             print(f"Found exact safe delay: {exact_delay:.2f}s")
@@ -64,8 +76,6 @@ def find_rate_limit(base_url):
             print(f"Increasing delay to {exact_delay:.2f}s due to rate limit.")
             time.sleep(cooldown)
 
-    avg_req_time = sum(req_times) / len(req_times) if req_times else 0
-    achieved_rps = 1 / (avg_req_time + exact_delay) if (avg_req_time + exact_delay) > 0 else 0
     safe_config = {'delay': exact_delay, 'rps': achieved_rps}
     print(f"\nMax sustainable RPS: {safe_config['rps']:.1f} (Exact Delay: {safe_config['delay']}s)")
     return safe_config
