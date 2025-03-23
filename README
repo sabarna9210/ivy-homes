@@ -177,14 +177,14 @@ For V1:
     Maximum RPS: 1.67
 
 For V2:
-    No of requests: 676
+    No of requests: 1296
     No of unique names: 7873
     Rate Limit: 50 requests per minute
     Maximum RPS: 0.83
 
 For V3:
-    No of requests: 676
-    No of unique names: 7156
+    No of requests: 1722
+    No of unique names: 7308
     Rate Limit: 80 requests per minute
     Maximum RPS: 1.33
     
