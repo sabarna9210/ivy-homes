@@ -80,7 +80,6 @@ class APIScraper:
         self._save_results()
 
     def _save_results(self):
-        """Save results to a file."""
         filename = f"results_v{self.version}.txt"
         with open(filename, "w", encoding="utf-8") as f:
             for item in sorted(self.results):  # Sorting results for readability
@@ -89,5 +88,5 @@ class APIScraper:
 
 if __name__ == "__main__":
 
-    scraper = APIScraper(version=1)
+    scraper = APIScraper(version=2)
     results = scraper.run()
