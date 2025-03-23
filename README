@@ -1,6 +1,6 @@
 Thank you for providing me the opportunity to work on this problem and showcase my skills. I have implemented the solution in Python .
 
-First, I should start by exploring the known endpoint. Let me try some sample queries. For example, if I send a GET request to /v1/autocomplete?query=a.But how does the autocomplete work? Maybe each character added narrows down the results. For instance, query=ab would return names starting with 'ab'. So the approach would be to perform a breadth-first search (BFS) on all possible prefixes. Starting with each letter a-z, then for each of those, appending another letter, and so on, until there are no more results.
+First, I should start by exploring the known endpoint. Let me try some sample queries. For example, if I send a GET request to /v1/autocomplete?query=a.But how does the autocomplete work? Maybe each character added narrows down the results. For instance, query=ab would return names starting with 'ab'. So the approach may  be to perform a breadth-first search (BFS) on all possible prefixes. Starting with each letter a-z, then for each of those, appending another letter, and so on, until there are no more results.But after some testing I realised many names cannot be extracted because of the size limit. So I had to use a brute force approach to get the names. I will explain the algorithm later in the README.
 
 The possible problems and constraints that could be present in this program can be:
 1.Valid characters that be used.
@@ -173,20 +173,15 @@ Final Output-->
 For V1:
     No of requests: 676
     No of unique names: 6720
-    Rate Limit: 100 requests per minute
-    Maximum RPS: 1.67
 
 For V2:
-    No of requests: 1296
+    No of requests: 1332
     No of unique names: 7873
-    Rate Limit: 50 requests per minute
-    Maximum RPS: 0.83
 
 For V3:
     No of requests: 1722
     No of unique names: 7308
-    Rate Limit: 80 requests per minute
-    Maximum RPS: 1.33
+
     
 
     
