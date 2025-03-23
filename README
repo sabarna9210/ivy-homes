@@ -165,3 +165,28 @@ Algorithm for the brute force approach:--->
 4. **Output Final Results:**
     - Print the total number of unique results collected.
     - Save the sorted results to a file (`results.txt`).
+
+
+
+Final Output-->
+
+For V1:
+    No of requests: 676
+    No of unique names: 6720
+    Rate Limit: 100 requests per minute
+    Maximum RPS: 1.67
+
+For V2:
+    No of requests: 676
+    No of unique names: 7873
+    Rate Limit: 50 requests per minute
+    Maximum RPS: 0.83
+
+For V3:
+    No of requests: 676
+    No of unique names: 7156
+    Rate Limit: 80 requests per minute
+    Maximum RPS: 1.33
+    
+
+    
