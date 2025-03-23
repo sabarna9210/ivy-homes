@@ -80,5 +80,4 @@ def find_rate_limit(base_url):
     print(f"\nMax sustainable RPS: {safe_config['rps']:.1f} (Exact Delay: {safe_config['delay']}s)")
     return safe_config
 
-# Example usage
 safe_config = find_rate_limit("http://35.200.185.69:8000/v2/autocomplete")
