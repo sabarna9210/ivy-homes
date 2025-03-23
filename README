@@ -24,41 +24,41 @@ To determine the maximum request rate the API allows without triggering 429 (Too
  <<The code is Given the the rateLimit.py file>>
 # Updated Rate Limit Discovery Algorithm
 1. Initialize Parameters:
-    - Set `initial_delay = 2.0` seconds.
-    - Set `delay_decrement = 0.05` seconds (coarse search).
-    - Set `delay_increment = 0.01` seconds (fine-tuning).
-    - Set `min_delay = 0.05` seconds.
-    - Set `batch_size = 10` requests.
-    - Set `cooldown = 5` seconds.
-    - Set `current_delay = initial_delay`.
-    - Set `safe_delay = None`.
+    - Set initial_delay = 2.0 seconds.
+    - Set delay_decrement = 0.05 seconds (coarse search).
+    - Set delay_increment = 0.01 seconds (fine-tuning).
+    - Set min_delay = 0.05 seconds.
+    - Set batch_size = 10 requests.
+    - Set cooldown = 5 seconds.
+    - Set current_delay = initial_delay.
+    - Set safe_delay = None.
 
 2. Coarse Search (Finding the Rate Limit):
-    while `current_delay >= min_delay`:
-        - Send `batch_size` requests with `current_delay` between them.
+    while current_delay >= min_dela:
+        - Send batch_size requests with current_delay between them.
         - Monitor response codes.
-        - if any request receives a `429` response:
+        - if any request receives a 429 response:
             - Print "Rate limit hit at delay Xs".
             - Break the loop and proceed to fine-tuning.
         - else:
-            - Store `current_delay` as `safe_delay`.
-        - Reduce `current_delay` by `delay_decrement`.
-        - Wait for `cooldown` seconds to allow rate limits to reset.
+            - Store current_delay as safe_delay.
+        - Reduce current_delay by `delay_decrement`.
+        - Wait for cooldown seconds to allow rate limits to reset.
 
 3. Fine-Tuning (Finding the Exact Safe Limit):
-    - Set `exact_delay = safe_delay`.
-    while `True`:
-        - Increase `exact_delay` by `delay_increment`.
-        - Send `batch_size` requests with `exact_delay` between them.
+    - Set exact_delay = safe_delay.
+    while True:
+        - Increase exact_delay by delay_increment.
+        - Send batch_size requests with exact_delay between them.
         - if any request receives a `429` response:
             - Print "Increasing delay to Xs due to rate limit".
-            - Continue increasing `exact_delay`.
+            - Continue increasing exact_delay.
         - else:
             - Print "Found exact safe delay: Xs".
             - Break the loop.
 
 4. Output Results:
-    - Report `exact_delay` as the highest sustainable request rate before hitting `429`.
+    - Report exact_delay as the highest sustainable request rate before hitting 429.
     - Calculate and report the **maximum sustainable requests per second (RPS)**.
 
 
